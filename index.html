@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>辉夜定制 - 图片存储展示平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        p {
+            font-size: 1.1rem;
+        }
+        
+        .upload-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .upload-section h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .cate {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .cate button {
+            padding: 10px 18px;
+            background: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .cate button:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .cate button.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .image-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .image-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .image-container:hover img {
+            transform: scale(1.05);
+        }
+        
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10;
+        }
+        
+        .image-info {
+            padding: 15px;
+        }
+        
+        .image-info h3 {
+            margin-bottom: 5px;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .image-info p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.9);
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 80%;
+            max-height: 80%;
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .folder-structure {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+        
+        .folder-structure h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .folder-structure pre {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .upload-section,
+            .folder-structure {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>辉夜定制</h1>
+            <p>个人图片存储展示平台</p>
+        </header>
+        
+        <div class="upload-section">
+            <h2>图片管理</h2>
+            <p>要添加图片，请将图片文件按以下结构放入对应文件夹：</p>
+            <ul>
+                <li>海报分类：images/海报/ 文件夹</li>
+                <li>名片分类：images/名片/ 文件夹</li>
+            </ul>
+            <p>要删除图片，请从对应文件夹中直接删除相应的图片文件。</p>
+        </div>
+        
+        <div class="cate">
+            <button data-cate="all" class="active">全部</button>
+            <button data-cate="海报">海报</button>
+            <button data-cate="名片">名片</button>
+        </div>
+        
+        <div id="imageGrid" class="image-grid">
+            <!-- 图片将通过JavaScript动态生成 -->
+        </div>
+        
+        <div class="folder-structure">
+            <h2>文件结构</h2>
+            <pre>
+├── index.html          # 主HTML文件
+└── images/             # 图片存储目录
+    ├── 海报/           # 海报分类图片
+    │   ├── poster1.jpg
+    │   └── poster2.jpg
+    └── 名片/           # 名片分类图片
+        ├── card1.jpg
+        └── card2.jpg
+            </pre>
+        </div>
+    </div>
+    
+    <!-- 图片查看模态框 -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+    
+    <script>
+        // 图片数据（实际使用时会从images文件夹读取）
+        // 这里使用模拟数据，实际部署时需要根据文件夹结构动态生成
+        const images = [
+            { name: "示例海报1", src: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=beautiful%20landscape%20nature%20photography&image_size=landscape_16_9", cate: "海报" },
+            { name: "示例海报2", src: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=city%20skyline%20at%20night&image_size=landscape_16_9", cate: "海报" },
+            { name: "示例名片1", src: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20a%20person&image_size=portrait_4_3", cate: "名片" }
+        ];
+        
+        // DOM元素
+        const imageGrid = document.getElementById('imageGrid');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeBtn = document.querySelector('.close');
+        const cateBtns = document.querySelectorAll('.cate button');
+        
+        // 渲染图片
+        function renderImages(filterCate = 'all') {
+            imageGrid.innerHTML = '';
+            
+            images.forEach((image, index) => {
+                if (filterCate === 'all' || image.cate === filterCate) {
+                    const imageItem = document.createElement('div');
+                    imageItem.className = 'image-item';
+                    imageItem.dataset.cate = image.cate;
+                    
+                    imageItem.innerHTML = `
+                        <div class="image-container">
+                            <img src="${image.src}" alt="${image.name}" data-index="${index}">
+                            <div class="watermark">辉夜定制</div>
+                        </div>
+                        <div class="image-info">
+                            <h3>${image.name}</h3>
+                            <p>分类：${image.cate}</p>
+                            <p>点击查看大图</p>
+                        </div>
+                    `;
+                    
+                    imageGrid.appendChild(imageItem);
+                }
+            });
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 图片点击事件
+            imageGrid.addEventListener('click', function(e) {
+                if (e.target.tagName === 'IMG') {
+                    const index = e.target.dataset.index;
+                    openModal(images[index].src);
+                }
+            });
+            
+            // 关闭模态框
+            closeBtn.addEventListener('click', closeModal);
+            
+            // 点击模态框外部关闭
+            imageModal.addEventListener('click', function(e) {
+                if (e.target === imageModal) {
+                    closeModal();
+                }
+            });
+            
+            // 分类按钮点击事件
+            cateBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    cateBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const cate = btn.dataset.cate;
+                    renderImages(cate);
+                });
+            });
+        }
+        
+        // 打开模态框
+        function openModal(imageSrc) {
+            imageModal.style.display = 'block';
+            modalImage.src = imageSrc;
+        }
+        
+        // 关闭模态框
+        function closeModal() {
+            imageModal.style.display = 'none';
+        }
+        
+        // 初始化
+        function init() {
+            renderImages();
+            setupEventListeners();
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = init;
+    </script>
+</body>
+</html>
