@@ -1,367 +1,351 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>辉夜定制 - QQ群：1094669183</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f5f7fa;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .header h1 {
-            color: #2d3748;
-            font-size: 28px;
-        }
-
-        .header p {
-            color: #718096;
-            margin-top: 8px;
-        }
-
-        /* 分类导航 */
-        .category-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            padding: 10px 25px;
-            background: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .tab-btn.active {
-            background: #3182ce;
-            color: white;
-        }
-
-        .tab-btn:hover:not(.active) {
-            background: #e8f0fe;
-        }
-
-        /* 图片网格布局 */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .category-title {
-            font-size: 22px;
-            color: #2d3748;
-            margin-bottom: 20px;
-            padding-left: 5px;
-            border-left: 4px solid #3182ce;
-        }
-
-        /* 图片卡片 */
-        .gallery-item {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .gallery-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .gallery-item img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .item-footer {
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .download-btn {
-            padding: 6px 12px;
-            background: #3182ce;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
-            text-decoration: none;
-        }
-
-        .download-btn:hover {
-            background: #2c5282;
-        }
-
-        /* 水印样式 */
-        .watermark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="80" opacity="0.15"><text x="50%" y="50%" font-size="24" text-anchor="middle" dominant-baseline="middle" fill="black">辉夜定制</text></svg>');
-            background-repeat: repeat;
-        }
-
-        /* 图片预览弹窗 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            max-width: 90%;
-            max-height: 90vh;
-            position: relative;
-        }
-
-        .modal-img {
-            max-width: 100%;
-            max-height: 90vh;
-            border-radius: 8px;
-            object-fit: contain;
-        }
-
-        .modal-watermark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100" opacity="0.2"><text x="50%" y="50%" font-size="32" text-anchor="middle" dominant-baseline="middle" fill="white">辉夜定制</text></svg>');
-            background-repeat: repeat;
-        }
-
-        .modal-download {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            padding: 10px 18px;
-            background: #3182ce;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            z-index: 10;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 40px;
-            color: white;
-            cursor: pointer;
-            background: none;
-            border: none;
-        }
-
-        /* 适配移动端 */
-        @media (max-width: 768px) {
-            .gallery-grid {
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            }
-            .header h1 {
-                font-size: 24px;
-            }
-            .tab-btn {
-                padding: 8px 18px;
-                font-size: 14px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>辉夜图片展示</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* 基础样式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Noto Sans SC', Arial, sans-serif;
+    }
+    body {
+      padding: 20px;
+      background-color: #f5f5f5;
+      background-image: url('background.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.30);
+      z-index: -1;
+      pointer-events: none;
+    }
+    .page-title {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 25px;
+      color: #333;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      letter-spacing: 2px;
+    }
+    .cate {
+      max-width: 1000px;
+      margin: 0 auto 20px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .cate button {
+      padding: 10px 18px;
+      background: rgba(255,255,255,0.8);
+      color: #333;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .cate button:hover {
+      background: rgba(255,255,255,0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .cate button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .cate button.active {
+      background: rgba(0,123,255,0.9);
+      color: white;
+    }
+    /* 图片网格 */
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .item {
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 10px;
+      padding: 8px;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+    .item img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+    }
+    .hy-num {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      background: red;
+      color: white;
+      font-size: 12px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    #modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    #modal.show {
+      display: flex;
+    }
+    #modalImg {
+      max-width: 90%;
+      max-height: 90vh;
+    }
+    #close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 30px;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    @media (max-width: 500px) {
+      #grid {
+        grid-template-columns: repeat(2, 1fr);
+        padding-bottom: 20px;
+      }
+    }
+    
+    /* 底部群号信息样式 */
+    .footer {
+      max-width: 1000px;
+      margin: 40px auto 20px;
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      text-align: center;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    .footer:hover {
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      transform: translateY(-2px);
+    }
+    .footer-content p {
+      color: #333;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+    /* 加载动画 */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 0;
+      font-size: 18px;
+      color: #666;
+    }
+    .loading::after {
+      content: '';
+      width: 20px;
+      height: 20px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>辉夜定制 - 图片图库</h1>
-            <p>点击图片可预览，支持下载原图 | 所有图片均为定制作品</p>
-        </div>
+  <h1 class="page-title">辉夜专属图库</h1>
 
-        <!-- 分类切换 -->
-        <div class="category-tabs">
-            <button class="tab-btn active" data-category="all">全部图片</button>
-            <button class="tab-btn" data-category="poster">海报分类</button>
-            <button class="tab-btn" data-category="card">名片分类</button>
-        </div>
+  <div class="cate">
+    <button data-cate="all" class="active">全部</button>
+    <button data-cate="元流海报">元流海报</button>
+    <button data-cate="交友名片">交友名片</button>
+  </div>
 
-        <!-- 全部图片 -->
-        <div id="all" class="category-section">
-            <h3 class="category-title">全部作品</h3>
-            <div class="gallery-grid" id="allGallery"></div>
-        </div>
+  <div id="grid">
+    <div class="loading">加载中...</div>
+  </div>
 
-        <!-- 海报分类 -->
-        <div id="poster" class="category-section" style="display:none">
-            <h3 class="category-title">海报分类</h3>
-            <div class="gallery-grid" id="posterGallery"></div>
-        </div>
+  <div id="modal">
+    <button id="close">×</button>
+    <img id="modalImg" src="">
+  </div>
 
-        <!-- 名片分类 -->
-        <div id="card" class="category-section" style="display:none">
-            <h3 class="category-title">名片分类</h3>
-            <div class="gallery-grid" id="cardGallery"></div>
-        </div>
+  <!-- 底部群号信息 -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>王者荣耀开黑交流群：1094669183</p>
     </div>
+  </footer>
 
-    <!-- 图片预览弹窗 -->
-    <div class="modal" id="imageModal">
-        <button class="close-modal" id="closeModal">&times;</button>
-        <div class="modal-content">
-            <img src="" alt="预览图片" id="modalImage" class="modal-img">
-            <div class="modal-watermark"></div>
-            <a id="modalDownloadBtn" class="modal-download" download>下载原图</a>
-        </div>
-    </div>
-
-    <script>
-        // ====================== 图片配置区（仅这里修改）======================
-        // type: poster = 海报  |  card = 名片
-        const images = [
-            // 海报
-            { name: "海报01", url: "https://raw.githubusercontent.com/Hye-steam/HyeTb/main/images/%E6%B5%B7%E6%8A%A5/51.jpg", type: "poster" },
-            { name: "海报02", url: "https://picsum.photos/800/1000?random=2", type: "poster" },
-            { name: "海报03", url: "https://picsum.photos/800/1000?random=3", type: "poster" },
-            
-            // 名片
-            { name: "名片01", url: "https://picsum.photos/800/500?random=4", type: "card" },
-            { name: "名片02", url: "https://picsum.photos/800/500?random=5", type: "card" },
-            { name: "名片03", url: "https://picsum.photos/800/500?random=6", type: "card" }
-        ];
-        // =================================================================
-
-        // 获取DOM
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const categorySections = document.querySelectorAll('.category-section');
-        const imageModal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        const modalDownloadBtn = document.getElementById('modalDownloadBtn');
-        const closeModal = document.getElementById('closeModal');
-
-        // 渲染对应分类图片
-        function renderGallery(containerId, typeFilter) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            
-            let list = images;
-            if(typeFilter) list = images.filter(item => item.type === typeFilter);
-
-            list.forEach(img => {
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                item.innerHTML = `
-                    <img src="${img.url}" alt="${img.name}">
-                    <div class="watermark"></div>
-                    <div class="item-footer">
-                        <span>${img.name}</span>
-                        <a href="${img.url}" class="download-btn" download="${img.name}">下载</a>
-                    </div>
-                `;
-                container.appendChild(item);
-
-                // 点击预览
-                item.querySelector('img').addEventListener('click', () => {
-                    openModal(img.url, img.name);
-                });
-            });
+  <script>
+    // ======================================
+    // 动态加载图片
+    // ======================================
+    let IMAGE_LIST = [];
+    
+    // 图片分类
+    const CATEGORIES = ['元流海报', '交友名片'];
+    
+    // 初始化
+    async function init() {
+      try {
+        // 加载图片
+        await loadImages();
+        // 渲染图片
+        render();
+        // 绑定事件
+        bindEvents();
+      } catch (error) {
+        console.error('初始化失败:', error);
+        document.querySelector('.loading').textContent = '加载失败，请刷新页面重试';
+      }
+    }
+    
+    // 加载图片
+    async function loadImages() {
+      // 模拟从目录结构加载图片
+      // 实际部署时，可根据实际的目录结构调整
+      const baseUrl = '.'; // GitHub Pages 根目录
+      
+      // 遍历分类
+      for (const category of CATEGORIES) {
+        try {
+          // 尝试加载分类目录下的图片
+          // 这里使用fetch API尝试获取目录内容
+          // 注意：GitHub Pages默认不允许直接访问目录列表
+          // 实际部署时，可能需要创建一个JSON文件来存储图片信息
+          
+          // 模拟数据 - 实际部署时替换为真实的图片路径
+          const mockImages = getMockImages(category);
+          IMAGE_LIST = [...IMAGE_LIST, ...mockImages];
+        } catch (error) {
+          console.error(`加载${category}失败:`, error);
         }
-
-        // 初始化所有分类
-        function initAll() {
-            renderGallery('allGallery', null);
-            renderGallery('posterGallery', 'poster');
-            renderGallery('cardGallery', 'card');
-        }
-
-        // 分类切换
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                const target = btn.dataset.category;
-                categorySections.forEach(sec => sec.style.display = 'none');
-                document.getElementById(target).style.display = 'block';
-            });
+      }
+    }
+    
+    // 模拟图片数据
+    function getMockImages(category) {
+      const images = [];
+      const count = category === '元流海报' ? 10 : 20;
+      
+      for (let i = 1; i <= count; i++) {
+        images.push({
+          id: `${category.replace(/\s+/g, '_')}_${i}`,
+          cate: category,
+          src: `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${encodeURIComponent(`${category} ${i}`)}&image_size=square`
         });
-
-        // 弹窗功能
-        function openModal(url, name) {
-            modalImage.src = url;
-            modalDownloadBtn.href = url;
-            modalDownloadBtn.download = name;
-            imageModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModalFunc() {
-            imageModal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        closeModal.addEventListener('click', closeModalFunc);
-        imageModal.addEventListener('click', (e) => {
-            if(e.target === imageModal) closeModalFunc();
+      }
+      
+      return images;
+    }
+    
+    // 渲染图片
+    function render() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      
+      if (IMAGE_LIST.length === 0) {
+        grid.innerHTML = '<div class="loading">暂无图片</div>';
+        return;
+      }
+      
+      IMAGE_LIST.forEach((image, index) => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.dataset.cate = image.cate;
+        
+        item.innerHTML = `
+          <div class="hy-num">HY${index + 1}</div>
+          <img src="${image.src}" alt="${image.cate}">
+        `;
+        
+        // 点击查看大图
+        item.addEventListener('click', () => {
+          const modal = document.getElementById('modal');
+          const modalImg = document.getElementById('modalImg');
+          modalImg.src = image.src;
+          modal.classList.add('show');
         });
-
-        // 启动
-        window.addEventListener('DOMContentLoaded', initAll);
-    </script>
+        
+        grid.appendChild(item);
+      });
+    }
+    
+    // 绑定事件
+    function bindEvents() {
+      // 分类切换
+      const cateBtns = document.querySelectorAll('.cate button');
+      cateBtns.forEach(btn => {
+        btn.onclick = () => {
+          cateBtns.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          const cate = btn.dataset.cate;
+          document.querySelectorAll(".item").forEach(el => {
+            el.style.display = cate === "all" || el.dataset.cate === cate ? "block" : "none";
+          });
+        };
+      });
+      
+      // 模态框关闭
+      const closeBtn = document.getElementById('close');
+      const modal = document.getElementById('modal');
+      closeBtn.onclick = () => modal.classList.remove("show");
+      modal.onclick = e => e.target === modal && modal.classList.remove("show");
+    }
+    
+    // 初始化
+    init();
+  </script>
 </body>
 </html>
